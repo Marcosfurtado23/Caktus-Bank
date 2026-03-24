@@ -1,0 +1,8 @@
+{
+  "name": "Kactus Bank",
+  "description": "A modern, secure, and professional digital banking application with a minimalist cactus theme.",
+  "requestFramePermissions": [
+    "camera",
+    "geolocation"
+  ]
+}
