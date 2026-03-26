@@ -49,43 +49,38 @@ export const bankService = {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   },
 
-  login: (cpf: string, password: string): User | null => {
-    // Simulated login
-    const savedPassword = localStorage.getItem('kactus_bank_password') || '0001';
-    
-    if (password === savedPassword) {
-      const data = bankService.getData();
-      if (!data.user || data.user.cpf !== cpf) {
-        const newUser: User = {
-          id: 'u1',
-          name: 'Marcos Silva',
-          cpf: cpf === 'Marcos' ? '123.456.789-00' : cpf,
-          email: 'marcos@example.com',
-          phone: '(11) 99999-9999',
-          accountNumber: '123456-7',
-          agency: '0001',
-          balance: 2500.50,
-          investmentBalance: 1700.00,
-          creditLimit: 5000,
-          usedCredit: 1200.40,
-          address: {
-            cep: '01001-000',
-            street: 'Praça da Sé',
-            number: '100',
-            city: 'São Paulo',
-            state: 'SP'
-          }
-        };
-        data.user = newUser;
-        bankService.saveData(data);
-        return newUser;
-      }
-      return data.user;
+  login: (cpf: string): User | null => {
+    // Simulated login without password
+    const data = bankService.getData();
+    if (!data.user || data.user.cpf !== cpf) {
+      const newUser: User = {
+        id: 'u1',
+        name: 'Marcos Silva',
+        cpf: cpf === 'Marcos' ? '123.456.789-00' : cpf,
+        email: 'marcos@example.com',
+        phone: '(11) 99999-9999',
+        accountNumber: '123456-7',
+        agency: '0001',
+        balance: 2500.50,
+        investmentBalance: 1700.00,
+        creditLimit: 5000,
+        usedCredit: 1200.40,
+        address: {
+          cep: '01001-000',
+          street: 'Praça da Sé',
+          number: '100',
+          city: 'São Paulo',
+          state: 'SP'
+        }
+      };
+      data.user = newUser;
+      bankService.saveData(data);
+      return newUser;
     }
-    return null;
+    return data.user;
   },
 
-  register: (userData: Partial<User>, password: string): User => {
+  register: (userData: Partial<User>): User => {
     const data = bankService.getData();
     const newUser: User = {
       id: Math.random().toString(36).substr(2, 9),

@@ -14,8 +14,6 @@ interface ProfileScreenProps {
 
 export const ProfileScreen = ({ user, onLogout, onUpdateUser }: ProfileScreenProps) => {
   const { theme, setTheme } = useTheme();
-  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
-  const [newPassword, setNewPassword] = useState('');
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   useEffect(() => {
@@ -38,21 +36,9 @@ export const ProfileScreen = ({ user, onLogout, onUpdateUser }: ProfileScreenPro
     }
   };
   
-  const handlePasswordChange = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (newPassword.length >= 4) {
-      localStorage.setItem('kactus_bank_password', newPassword);
-      setIsPasswordModalOpen(false);
-      setNewPassword('');
-      alert('Senha alterada com sucesso!');
-    } else {
-      alert('A senha deve ter pelo menos 4 caracteres.');
-    }
-  };
-
   const menuItems = [
     { icon: Settings, label: 'Dados da Conta', sub: 'Agência, Conta e Chaves', onClick: undefined },
-    { icon: Shield, label: 'Segurança', sub: 'Senha, PIN e Biometria', onClick: () => setIsPasswordModalOpen(true) },
+    { icon: Shield, label: 'Segurança', sub: 'PIN e Biometria', onClick: undefined },
     { icon: Bell, label: 'Notificações', sub: 'Alertas e SMS', onClick: undefined },
     { icon: MapPin, label: 'Endereço', sub: user.address.city + ', ' + user.address.state, onClick: undefined },
     { icon: Phone, label: 'Contato', sub: user.phone, onClick: undefined },
@@ -145,48 +131,6 @@ export const ProfileScreen = ({ user, onLogout, onUpdateUser }: ProfileScreenPro
           </div>
         ))}
       </div>
-
-      {/* Password Change Modal */}
-      <AnimatePresence>
-        {isPasswordModalOpen && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="bg-white dark:bg-kactus-card-dark w-full max-w-sm rounded-[32px] overflow-hidden shadow-2xl border border-black/5 dark:border-white/10"
-            >
-              <div className="p-6 border-b border-black/5 dark:border-white/5 flex items-center justify-between">
-                <h3 className="font-bold text-lg text-kactus-dark dark:text-white">Alterar Senha</h3>
-                <button 
-                  onClick={() => setIsPasswordModalOpen(false)}
-                  className="p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-full transition-colors"
-                >
-                  <X size={20} className="text-kactus-dark/40 dark:text-white/40" />
-                </button>
-              </div>
-              
-              <form onSubmit={handlePasswordChange} className="p-6 space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-kactus-dark/60 dark:text-white/60 mb-1">Nova Senha</label>
-                  <input
-                    type="password"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    placeholder="Digite a nova senha"
-                    className="w-full px-4 py-3 rounded-xl border border-black/10 dark:border-white/10 bg-transparent text-kactus-dark dark:text-white focus:outline-none focus:border-kactus-green"
-                    required
-                    minLength={4}
-                  />
-                </div>
-                <Button type="submit" className="w-full">
-                  Salvar Senha
-                </Button>
-              </form>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
 
       <div className="pt-4">
         <Button 

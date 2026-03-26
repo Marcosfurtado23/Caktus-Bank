@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Home, FileText, Settings, User, Bell, Menu, Sun, Moon } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useTheme } from '../contexts/ThemeContext';
 import { soundService } from '../services/soundService';
+import { AIChat } from './AIChat';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -11,17 +12,18 @@ interface LayoutProps {
   onBack?: () => void;
   onOpenSidebar?: () => void;
   onOpenNotifications?: () => void;
-  onOpenAIChat?: () => void;
   title?: string;
   userName?: string;
 }
 
-export const Layout = ({ children, activeTab, setActiveTab, onBack, onOpenSidebar, onOpenNotifications, onOpenAIChat, title, userName }: LayoutProps) => {
+export const Layout = ({ children, activeTab, setActiveTab, onBack, onOpenSidebar, onOpenNotifications, title, userName }: LayoutProps) => {
   const { theme, toggleTheme } = useTheme();
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   const navItems = [
     { id: 'home', icon: Home, label: 'Início' },
     { id: 'pay', icon: FileText, label: 'Pagamentos' },
+    { id: 'chat', isSpecial: true },
     { id: 'settings', icon: Settings, label: 'Ajustes' },
     { id: 'profile', icon: User, label: 'Perfil' },
   ];
@@ -108,67 +110,54 @@ export const Layout = ({ children, activeTab, setActiveTab, onBack, onOpenSideba
       </main>
 
       {/* Bottom Navigation */}
-      <nav className={`fixed bottom-12 left-0 right-0 h-[75px] flex justify-around items-center z-20 shadow-[0_-2px_10px_rgba(0,0,0,0.1)] transition-all duration-300 ${
+      <nav className={`fixed bottom-0 left-0 right-0 h-[75px] flex justify-around items-center z-20 shadow-[0_-2px_10px_rgba(0,0,0,0.1)] transition-all duration-300 ${
         theme === 'liquid-glass' 
           ? 'bg-black/20 backdrop-blur-xl border-t border-white/10' 
           : 'bg-white dark:bg-kactus-card-dark'
       }`}>
-        {navItems.slice(0, 2).map((item) => (
-          <button
-            key={item.id}
-            onClick={() => {
-              soundService.play('click');
-              setActiveTab(item.id);
-            }}
-            className={`flex flex-col items-center gap-1 ${
-              activeTab === item.id 
-                ? 'text-kactus-green' 
-                : theme === 'liquid-glass' ? 'text-white/40' : 'text-gray-400'
-            }`}
-          >
-            <item.icon size={24} />
-            <span className="text-[11px] font-medium">{item.label}</span>
-          </button>
-        ))}
-
-        {/* Central FAB */}
-        <div className="relative -top-6">
-          <button 
-            onClick={() => {
-              soundService.play('pop');
-              onOpenAIChat?.();
-            }}
-            className={`w-[60px] h-[60px] bg-kactus-green rounded-full flex items-center justify-center text-white border-[5px] shadow-lg shadow-kactus-green/30 active:scale-95 transition-all overflow-hidden ${
-              theme === 'liquid-glass' ? 'border-white/10 backdrop-blur-md' : 'border-kactus-light dark:border-kactus-bg-dark'
-            }`}
-          >
-            <img 
-              src="https://image2url.com/r2/default/gifs/1773694249528-1ecabb0c-5cb0-4456-ad9b-47596707c417.gif" 
-              alt="Cacto" 
-              className="w-full h-full object-contain scale-125"
-              referrerPolicy="no-referrer"
-            />
-          </button>
-        </div>
-
-        {navItems.slice(2, 4).map((item) => (
-          <button
-            key={item.id}
-            onClick={() => {
-              soundService.play('click');
-              setActiveTab(item.id);
-            }}
-            className={`flex flex-col items-center gap-1 ${
-              activeTab === item.id 
-                ? 'text-kactus-green' 
-                : theme === 'liquid-glass' ? 'text-white/40' : 'text-gray-400'
-            }`}
-          >
-            <item.icon size={24} />
-            <span className="text-[11px] font-medium">{item.label}</span>
-          </button>
-        ))}
+        {navItems.map((item) => {
+          if (item.isSpecial) {
+            return (
+              <button
+                key={item.id}
+                onClick={() => {
+                  soundService.play('pop');
+                  setIsChatOpen(true);
+                }}
+                className="relative -top-5 w-16 h-16 flex items-center justify-center z-40 hover:scale-105 transition-transform"
+              >
+                <div className="absolute inset-0 bg-kactus-green rounded-full shadow-lg shadow-kactus-green/30" />
+                <img 
+                  src="https://image2url.com/r2/default/gifs/1773694249528-1ecabb0c-5cb0-4456-ad9b-47596707c417.gif" 
+                  alt="Assistente Kactus" 
+                  className="w-12 h-12 object-contain filter drop-shadow-2xl relative z-10"
+                  referrerPolicy="no-referrer"
+                />
+                <div className="absolute top-0 right-0 w-4 h-4 bg-red-500 rounded-full border-2 border-white dark:border-kactus-dark z-20" />
+              </button>
+            );
+          }
+          return (
+            <button
+              key={item.id}
+              onClick={() => {
+                soundService.play('click');
+                setActiveTab(item.id);
+              }}
+              className={`flex flex-col items-center gap-1 flex-1 ${
+                activeTab === item.id 
+                  ? 'text-kactus-green' 
+                  : theme === 'liquid-glass' ? 'text-white/40' : 'text-gray-400'
+              }`}
+            >
+              {item.icon && <item.icon size={24} />}
+              <span className="text-[11px] font-medium">{item.label}</span>
+            </button>
+          );
+        })}
       </nav>
+      
+      <AIChat isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
     </div>
   );
 };

@@ -17,10 +17,8 @@ import { ProfileScreen } from './screens/ProfileScreen';
 import { PrimeScreen } from './screens/PrimeScreen';
 import { MarketplaceScreen } from './screens/MarketplaceScreen';
 import { Layout } from './components/Layout';
-import { LoadingScreen } from './components/LoadingScreen';
 import { Sidebar } from './components/Sidebar';
 import { MoreActions } from './components/MoreActions';
-import { AIChat } from './components/AIChat';
 import { Notifications } from './components/Notifications';
 import { Toast } from './components/Toast';
 import { bankService } from './services/bankService';
@@ -36,10 +34,8 @@ export default function App() {
   const [subScreen, setSubScreen] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [loading, setLoading] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMoreActionsOpen, setIsMoreActionsOpen] = useState(false);
-  const [isAIChatOpen, setIsAIChatOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const [toast, setToast] = useState<{ show: boolean; title: string; message: string }>({
@@ -84,31 +80,21 @@ export default function App() {
     };
   }, []);
 
-  const handleLogin = (cpf: string, pass: string) => {
-    setLoading(true);
-    
-    // Simulate loading time for the spinning cactus effect
-    setTimeout(() => {
-      const loggedUser = bankService.login(cpf, pass);
-      if (loggedUser) {
-        setUser(loggedUser);
-        setTransactions(bankService.getData().transactions);
-        setState('APP');
-      } else {
-        alert('CPF ou senha incorretos.');
-      }
-      setLoading(false);
-    }, 8000);
+  const handleLogin = (cpf: string) => {
+    const loggedUser = bankService.login(cpf);
+    if (loggedUser) {
+      setUser(loggedUser);
+      setTransactions(bankService.getData().transactions);
+      setState('APP');
+    } else {
+      alert('CPF incorreto.');
+    }
   };
 
   const handleRegisterComplete = (formData: any) => {
-    setLoading(true);
-    setTimeout(() => {
-      const newUser = bankService.register(formData, formData.password);
-      setUser(newUser);
-      setState('LOGIN');
-      setLoading(false);
-    }, 8000);
+    const newUser = bankService.register(formData);
+    setUser(newUser);
+    setState('LOGIN');
   };
 
   const handleLogout = () => {
@@ -222,21 +208,6 @@ export default function App() {
         title={toast.title}
         message={toast.message}
       />
-      <AnimatePresence>
-        {loading && <LoadingScreen />}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {isAIChatOpen && user && (
-          <AIChat 
-            isOpen={isAIChatOpen} 
-            onClose={() => setIsAIChatOpen(false)} 
-            userName={user.name} 
-            isKeyboardVisible={isKeyboardVisible}
-          />
-        )}
-      </AnimatePresence>
-      
       <AnimatePresence mode="wait">
         {state === 'LOGIN' && (
         <LoginScreen 
@@ -283,7 +254,6 @@ export default function App() {
             onBack={subScreen ? () => setSubScreen(null) : undefined}
             onOpenSidebar={() => setIsSidebarOpen(true)}
             onOpenNotifications={() => setIsNotificationsOpen(true)}
-            onOpenAIChat={() => setIsAIChatOpen(true)}
           >
             {activeTab === 'home' && !subScreen ? (
               <HomeScreen 

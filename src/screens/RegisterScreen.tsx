@@ -13,8 +13,7 @@ export const RegisterScreen = ({ onBack, onComplete }: RegisterScreenProps) => {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     name: '', cpf: '', birthDate: '', email: '', phone: '',
-    cep: '', street: '', number: '', complement: '', city: '', state: '',
-    password: '', confirmPassword: '', pin: ''
+    cep: '', street: '', number: '', complement: '', city: '', state: ''
   });
 
   const nextStep = () => setStep(s => s + 1);
@@ -55,15 +54,6 @@ export const RegisterScreen = ({ onBack, onComplete }: RegisterScreenProps) => {
         );
       case 3:
         return (
-          <div className="space-y-4">
-            <h3 className="text-xl font-bold text-kactus-dark">Segurança</h3>
-            <Input label="Criar Senha" name="password" type="password" value={formData.password} onChange={handleChange} />
-            <Input label="Confirmar Senha" name="confirmPassword" type="password" value={formData.confirmPassword} onChange={handleChange} />
-            <Input label="PIN de 4 dígitos" name="pin" type="password" maxLength={4} value={formData.pin} onChange={handleChange} placeholder="0000" />
-          </div>
-        );
-      case 4:
-        return (
           <div className="space-y-6">
             <h3 className="text-xl font-bold text-kactus-dark">Verificação</h3>
             <div className="space-y-4">
@@ -84,7 +74,7 @@ export const RegisterScreen = ({ onBack, onComplete }: RegisterScreenProps) => {
             </div>
           </div>
         );
-      case 5:
+      case 4:
         return (
           <div className="text-center space-y-6 py-8">
             <div className="w-20 h-20 bg-kactus-green/10 rounded-full mx-auto flex items-center justify-center">
@@ -130,9 +120,9 @@ export const RegisterScreen = ({ onBack, onComplete }: RegisterScreenProps) => {
       </div>
 
       <footer className="mt-8">
-        {step < 5 ? (
+        {step < 4 ? (
           <Button onClick={nextStep} className="w-full py-4 text-lg">
-            {step === 4 ? 'Finalizar Cadastro' : 'Continuar'}
+            {step === 3 ? 'Finalizar Cadastro' : 'Continuar'}
           </Button>
         ) : (
           <Button onClick={() => onComplete(formData)} className="w-full py-4 text-lg">
